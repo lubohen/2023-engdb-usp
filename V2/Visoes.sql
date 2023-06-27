@@ -68,7 +68,7 @@ FROM
 ORDER BY
   date;
 
-  --- 
+  --- condados_unificados
 
   CREATE TABLE IF NOT EXISTS "covid-refined"."nytimes-refined-us_counties_unt" WITH (
 	format = 'ORC',
@@ -88,3 +88,14 @@ FROM
   "nytimes-trusted-counties"
 ORDER BY
   date;
+  
+
+-- Spec County from Mask use
+
+  CREATE TABLE IF NOT EXISTS "covid-refined"."nytimes-refined-us_mask_county" WITH (
+	format = 'ORC',
+	external_location = 's3://usp-prjint-covid/specialized/us_mask_county/',
+) AS
+SELECT DISTINCT (T1.county), T1.fips, T1.state, T2.never, T2.rarely, T2.sometimes, T2.frequently, T2.always FROM "covid-trusted"."nytimes-trusted-counties" T1
+LEFT JOIN "covid-trusted"."nytimes-trusted-mask" T2
+ON T1.fips = T2.countyfp;
